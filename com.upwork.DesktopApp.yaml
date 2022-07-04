@@ -1,0 +1,57 @@
+---
+app-id: com.upwork.DesktopApp
+command: upwork
+runtime-version: "42"
+runtime: org.gnome.Platform
+sdk: org.gnome.Sdk
+rename-desktop-file: upwork.desktop
+rename-icon: upwork
+finish-args:
+  - --device=all
+  - --nodevice=kvm
+
+  # pipewire
+  - --filesystem=xdg-run/pipewire-0
+  - --socket=system-bus
+
+  # Needed to talk with pulseaudio or pipewire
+  - --share=ipc
+
+  # Needed for updating the sound content, checking for online notifications and authentication
+  - --share=network
+
+  # Self explanatory
+  - --socket=pulseaudio
+  - --socket=wayland
+  - --socket=x11
+
+  # For desktop notifications
+  - --talk-name=org.freedesktop.Notifications
+
+  # For secrets communication
+  - --talk-name=org.freedesktop.secrets
+
+  # Give access to HOME
+  - --filesystem=home
+
+modules:
+  - name: "upwork"
+    buildsystem: simple
+    build-commands:
+      - mkdir -p ${FLATPAK_DEST}/bin ${FLATPAK_DEST}/lib
+      - mv upwork /app/bin/
+      - cp -r Upwork/* ${FLATPAK_DEST}
+      - rm -fr share/icons/hicolor/1024x1024
+      - cp -r share ${FLATPAK_DEST}
+    post-install:
+      - sed -ri 's@/opt/Upwork/upwork@upwork@' ${FLATPAK_DEST}/share/applications/upwork.desktop
+    sources:
+      - type: archive
+        url: https://upwork-usw2-desktopapp.upwork.com/binaries/v5_6_10_13_3c485d1dd2af4f61/upwork-5.6.10.13-1fc24.x86_64.rpm
+        sha256: 9364efc0297ce257e9db4acb6aabddf43cc80e705df7a3fe120c419d3b7edbd8
+        only-arches:
+          - x86_64
+      - type: file
+        path: bin/upwork
+
+# vim: set expandtab tabstop=2 sw=2:

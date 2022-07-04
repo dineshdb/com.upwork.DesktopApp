@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# this is just a wrapper so that DesktopApp doens't segfault
+/app/upwork
